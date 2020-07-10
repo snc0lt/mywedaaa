@@ -1,26 +1,39 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react'
+import './App.css'
+import Nav from './components/Nav'
+import Search from './components/Serach'
+import Date from './components/Date'
+import Weather from './components/Weather'
+import { key, base } from "./api";
 
-function App() {
+
+
+const App = () => {
+
+  const [query, setQuery] = useState('')
+  const [weather, setWeather] = useState({})
+
+  const search = (e) => {
+    if(e.key === 'Enter') {
+      fetch(`${base}weather?q=${query}&units=metric&APPID=${key}`)
+        .then( res => res.json())
+        .then( result => {
+          setWeather(result)
+          setQuery('')
+          console.log(result)
+        })
+    }
+  }
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className={(typeof weather.main != 'undefined') ? ((weather.main.temp > 18) ?'warm' : 'cold' ) : 'cold'}>
+      <Nav/>
+      <div className="container">
+      <Search query={query} setQuery={setQuery} search={search}/>
+      <Date weather={weather}/>
+      <Weather weather={weather}/>
+      </div>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
